@@ -1,0 +1,37 @@
+Create Index: 
+(PUT) http://localhost:9200/customers
+
+Show All Index:
+(GET) http://localhost:9200/_cat/indices?v
+
+Delete Index:
+(DELETE) http://localhost:9200/customers
+
+Get Mapping: 
+(GET) http://localhost:9200/customers/_mapping
+
+Update Mapping: 
+(PUT) http://localhost:9200/customers/_mapping
+{
+    "date_detection": true,
+    "dynamic_date_formats": [
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd",
+        "yyyy/MM/dd HH:mm:ss",
+        "yyyy/MM/dd"
+    ]
+}
+
+NOTE: 
+pada elasticsearch type data harus sama pada document
+
+NOTE: 
+pada elasticsearch ketika kita sudah membuat attribut maka kita tidak bisa mengubah atau menghapusnya
+
+NOTE:
+term query tidak bisa mencari Tipe Data Text meskipun nilai nya sama "BCA" = "BCA", karena tipe text akan secara otomatis diubah menjadi token oleh Text Analysis
+
+NOTE: 
+match query cocok untuk tipe data text karena akan menggunakan Text Analysis
+
+boolean query memungkinkan untuk query lebih dari satu property
