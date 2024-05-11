@@ -618,6 +618,21 @@ Content-Type: application/json
     }
 }
 
+### Range Query
+POST http://localhost:9200/customer/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "range": {
+      "birth_date": {
+        "gte": "1995-01-01",
+        "lte": "2000-01-01"
+      }
+    }
+  }
+}
+
 ### Boolean Query (must) - where hobbies = 'gaming' AND banks.name = 'bca
 POST http://localhost:9200/customer/_search
 Content-Type: application/json
@@ -722,6 +737,51 @@ Content-Type: application/json
                         "banks.name": {
                             "query": "bni"
                         }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+### Nested bool query = where (hobbies = 'traveler' or hobbies = 'gaming') and (bank.name = 'bca' or bank.name = 'bni')
+POST http://localhost:9200/customer/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                "match": {
+                                    "hobbies": "traveler"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "hobbies": "gaming"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                "term": {
+                                    "banks.name":  "bca"
+                                }
+                            },
+                            {
+                                "term": {
+                                    "banks.name": "bni"
+                                }
+                            }
+                        ]
                     }
                 }
             ]
@@ -1212,16 +1272,34 @@ Content-Type: application/json
     ]
 }
 
-### Search After (Rekomedasi daripada paginate)
+### Search After - Rekomedasi daripada paginate (from)
+### First Search
 GET http://localhost:9200/categories/_search
 Content-Type: application/json
 
 {
-    "size": 100,
-    "from": 0,
     "query": {
         "match_all": {}
     },
+    "size": 10,
+    "sort": [ // harus ada sort untuk menggunakan Search After
+        {
+            "id": {
+                "order": "asc"
+            }
+        }
+    ]
+}
+
+### Next Page
+GET http://localhost:9200/categories/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "match_all": {}
+    },
+    "size": 10,
     "sort": [
         {
             "id": {
@@ -1230,7 +1308,7 @@ Content-Type: application/json
         }
     ],
     "search_after": [
-        "10267"
+        12
     ]
 }
 
